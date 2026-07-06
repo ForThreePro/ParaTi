@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Romina - Mi familia 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: linear-gradient(135deg, #ff9ec9 0%, #ffd6e8 100%);
+    font-family: 'Poppins', sans-serif; overflow-x: hidden;
+  }
+  canvas { position: fixed; top:0; left:0; z-index: 0; }
+  
+  #btnMusica {
+    position: fixed; top: 20px; right: 20px; z-index: 999;
+    background: rgba(255,255,255,0.9); border: none; border-radius: 50%;
+    width: 55px; height: 55px; font-size: 1.8em; cursor: pointer; 
+    animation: pulse 2s infinite; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  
+  .container {
+    position: relative; z-index: 2; text-align: center; 
+    background: rgba(255,255,255,0.95); padding: 40px; border-radius: 30px;
+    box-shadow: 0 15px 50px rgba(214,51,132,0.3); max-width: 750px; margin: 50px auto;
+  }
+  h1 { color: #d63384; font-size: 2.8em; margin-bottom: 10px; font-family: 'Dancing Script', cursive; }
+  
+  /* CONTADOR */
+  #contador {
+    display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap;
+  }
+  .tiempo {
+    background: linear-gradient(45deg, #ff5e94, #ff9ec9); color: white;
+    padding: 15px 20px; border-radius: 15px; min-width: 90px;
+  }
+  .tiempo span { font-size: 2em; font-weight: bold; display: block; }
+  
+  /* GALERIA */
+  .galeria {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px; margin: 30px 0;
+  }
+  .galeria img {
+    width: 100%; height: 220px; object-fit: cover; border-radius: 20px;
+    transition: 0.3s; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  }
+  .galeria img:hover { transform: scale(1.05) rotate(1deg); }
+  
+  #carta {
+    font-family: 'Dancing Script', cursive; font-size: 1.6em; color: #d63384;
+    text-align: left; margin: 30px 0; line-height: 1.8;
+  }
+  .cursor { animation: blink 1s infinite; }
+  @keyframes blink { 50%{opacity:0} }
+  
+  .btn { 
+    background: #ff5e94; color: white; padding: 18px 50px; 
+    border: none; border-radius: 50px; font-size: 1.4em; font-weight: bold;
+    cursor: pointer; margin-top: 20px; transition: 0.3s;
+  }
+  .btn:hover { transform: scale(1.05); }
+  
+  /* LLUVIA */
+  .nombre-flotante {
+    position: fixed; font-size: 1.5em; font-weight: bold; color: #ff5e94;
+    pointer-events: none; animation: flotar 5s linear forwards; z-index: 10;
+  }
+  @keyframes flotar {
+    0% { transform: translateY(-50px); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="hearts"></canvas>
+
+<button id="btnMusica" onclick="toggleMusica()">⏸️</button>
+<audio id="musica" loop autoplay>
+  <source src="musica.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+  <h1>Romina ❤️</h1>
+  <p style="color:#a63a6a; font-size:1.3em;">La madre de mis 2 princesas: Zoe y Zarah</p>
+  
+  <h2 style="color:#d63384; margin:20px 0;">Llevamos juntos:</h2>
+  <div id="contador">
+    <div class="tiempo"><span id="años">0</span>Años</div>
+    <div class="tiempo"><span id="meses">0</span>Meses</div>
+    <div class="tiempo"><span id="dias">0</span>Días</div>
+    <div class="tiempo"><span id="horas">0</span>Horas</div>
+  </div>
+  
+  <h2 style="color:#d63384;">Nuestra familia 💕</h2>
+  <div class="galeria">
+    <img src="https://files.evogb.win/5gnyrb.jpg" alt="Foto 1">
+    <img src="https://files.evogb.win/tA4z1v.jpg" alt="Foto 2">
+    <img src="https://files.evogb.win/VLj80J.jpg" alt="Foto 3">
+    <img src="https://files.evogb.win/TQMNqu.jpg" alt="Foto 4">
+  </div>
+  
+  <div id="carta"></div>
+  
+  <button class="btn" onclick="alert('Te amo por siempre Romina. Gracias por Zoe y Zarah 💖')">Te amo hoy y siempre</button>
+</div>
+
+<script>
+// CORAZONES
+const canvas = document.getElementById('hearts'); const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+let hearts = [];
+function Heart(){ this.x=Math.random()*canvas.width; this.y=-20; this.size=Math.random()*15+10; this.speed=Math.random()*2+1; }
+Heart.prototype.draw=function(){ ctx.fillStyle='rgba(255,105,180,0.5)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
+function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); if(hearts.length<50) hearts.push(new Heart()); hearts.forEach((h,i)=>{ h.y+=h.speed; h.draw(); if(h.y>canvas.height) hearts.splice(i,1); }); requestAnimationFrame(animate); }
+animate();
+
+// MUSICA
+const musica = document.getElementById('musica'); let reproduciendo = true;
+musica.volume = 0.5; // volumen al 50% para que no sea tan fuerte
+function toggleMusica(){ 
+  if(reproduciendo){ 
+    musica.pause(); 
+    btnMusica.innerHTML='▶️'; 
+  } else { 
+    musica.play(); 
+    btnMusica.innerHTML='⏸️'; 
+  } 
+  reproduciendo = !reproduciendo; 
+}
+
+// Por si el navegador bloquea autoplay
+window.addEventListener('click', ()=>{ if(musica.paused){ musica.play(); } }, {once:true});
+
+// LLUVIA DE NOMBRES
+function lluvia(){
+  const nombres = ['Romina', 'Te amo', 'Familia', 'Zoe', 'Zarah', 'Amor', 'Mamá'];
+  setInterval(()=>{
+    let n = document.createElement('div');
+    n.className = 'nombre-flotante';
+    n.innerText = nombres[Math.floor(Math.random()*nombres.length)];
+    n.style.left = Math.random()*100+'vw';
+    n.style.fontSize = Math.random()*8+18+'px';
+    document.body.appendChild(n);
+    setTimeout(()=>n.remove(), 5000);
+  }, 400);
+}
+lluvia();
+
+// CONTADOR REAL DESDE 17/06/2020
+function actualizarContador(){
+  const inicio = new Date('2020-06-17T00:00:00');
+  const ahora = new Date();
+  let diff = ahora - inicio;
+  
+  const años = Math.floor(diff / (1000*60*60*24*365));
+  diff -= años * 1000*60*60*24*365;
+  const meses = Math.floor(diff / (1000*60*60*24*30));
+  diff -= meses * 1000*60*60*24*30;
+  const dias = Math.floor(diff / (1000*60*60*24));
+  diff -= dias * 1000*60*60*24;
+  const horas = Math.floor(diff / (1000*60*60));
+  
+  document.getElementById('años').innerText = años;
+  document.getElementById('meses').innerText = meses;
+  document.getElementById('dias').innerText = dias;
+  document.getElementById('horas').innerText = horas;
+}
+setInterval(actualizarContador, 1000);
+actualizarContador();
+
+// CARTA
+window.onload = ()=>{
+  const texto = `Romina...
+El 17 de junio del 2020 empezó nuestra historia.
+Y me diste el regalo más grande del mundo: Zoe y Zarah.
+Gracias por ser la mejor mamá y el amor de mi vida.
+Prometo seguir construyendo esta familia contigo.
+Te amo por siempre. 💕`;
+  let i=0; 
+  function type(){
+    if(i<texto.length){
+      document.getElementById('carta').innerHTML = texto.substring(0,i+1)+'<span class="cursor">|</span>';
+      i++; setTimeout(type,60);
+    } else { document.getElementById('carta').innerHTML = texto; }
+  }
+  setTimeout(type, 2000);
+}
+</script>
+</body>
+  </html>
